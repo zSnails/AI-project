@@ -1,0 +1,302 @@
+,Car_Name,Car_Name_Code
+0,ritz,90
+1,sx4,93
+2,ciaz,68
+3,wagon r,96
+4,swift,92
+5,vitara brezza,95
+6,ciaz,68
+7,s cross,91
+8,ciaz,68
+9,ciaz,68
+10,alto 800,62
+11,ciaz,68
+12,ciaz,68
+13,ertiga,76
+14,dzire,73
+15,ertiga,76
+16,ertiga,76
+17,ertiga,76
+18,wagon r,96
+19,sx4,93
+20,alto k10,63
+21,ignis,85
+22,sx4,93
+23,alto k10,63
+24,wagon r,96
+25,swift,92
+26,swift,92
+27,swift,92
+28,alto k10,63
+29,ciaz,68
+30,ritz,90
+31,ritz,90
+32,swift,92
+33,ertiga,76
+34,dzire,73
+35,sx4,93
+36,dzire,73
+37,800,0
+38,alto k10,63
+39,sx4,93
+40,baleno,65
+41,alto k10,63
+42,sx4,93
+43,dzire,73
+44,omni,89
+45,ciaz,68
+46,ritz,90
+47,wagon r,96
+48,ertiga,76
+49,ciaz,68
+50,fortuner,81
+51,fortuner,81
+52,innova,86
+53,fortuner,81
+54,innova,86
+55,corolla altis,71
+56,etios cross,77
+57,corolla altis,71
+58,etios g,78
+59,fortuner,81
+60,corolla altis,71
+61,etios cross,77
+62,fortuner,81
+63,fortuner,81
+64,fortuner,81
+65,etios liva,80
+66,innova,86
+67,fortuner,81
+68,corolla altis,71
+69,corolla altis,71
+70,etios liva,80
+71,corolla altis,71
+72,corolla altis,71
+73,etios liva,80
+74,etios cross,77
+75,etios g,78
+76,corolla altis,71
+77,corolla,70
+78,corolla altis,71
+79,fortuner,81
+80,corolla altis,71
+81,etios gd,79
+82,innova,86
+83,innova,86
+84,innova,86
+85,camry,67
+86,land cruiser,88
+87,corolla altis,71
+88,etios liva,80
+89,etios g,78
+90,corolla altis,71
+91,innova,86
+92,innova,86
+93,fortuner,81
+94,corolla altis,71
+95,corolla altis,71
+96,innova,86
+97,corolla altis,71
+98,corolla altis,71
+99,fortuner,81
+100,Royal Enfield Thunder 500,49
+101,UM Renegade Mojave,56
+102,KTM RC200,42
+103,Bajaj Dominar 400,11
+104,Royal Enfield Classic 350,46
+105,KTM RC390,43
+106,Hyosung GT250R,40
+107,Royal Enfield Thunder 350,48
+108,Royal Enfield Thunder 350,48
+109,Royal Enfield Classic 350,46
+110,KTM RC200,42
+111,Royal Enfield Thunder 350,48
+112,KTM 390 Duke ,41
+113,Mahindra Mojo XT300,44
+114,Royal Enfield Classic 350,46
+115,Royal Enfield Classic 350,46
+116,Royal Enfield Classic 350,46
+117,Royal Enfield Thunder 500,49
+118,Royal Enfield Classic 350,46
+119,Royal Enfield Thunder 500,49
+120,Bajaj Pulsar RS200,17
+121,Royal Enfield Thunder 350,48
+122,Royal Enfield Bullet 350,45
+123,Royal Enfield Classic 350,46
+124,Royal Enfield Classic 500,47
+125,Royal Enfield Classic 500,47
+126,Bajaj Avenger 220,6
+127,Bajaj Avenger 150,4
+128,Honda CB Hornet 160R,32
+129,Yamaha FZ S V 2.0,60
+130,Honda CB Hornet 160R,32
+131,Yamaha FZ 16,58
+132,Bajaj Avenger 220,6
+133,Bajaj Avenger 220,6
+134,TVS Apache RTR 160,51
+135,Bajaj Pulsar 150,14
+136,Honda CBR 150,37
+137,Hero Extreme,20
+138,Honda CB Hornet 160R,32
+139,Bajaj Avenger 220 dtsi,7
+140,Honda CBR 150,37
+141,Bajaj Avenger 150 street,5
+142,Yamaha FZ  v 2.0,57
+143,Yamaha FZ  v 2.0,57
+144,Bajaj Pulsar  NS 200,12
+145,TVS Apache RTR 160,51
+146,Hero Extreme,20
+147,Yamaha FZ S V 2.0,60
+148,Bajaj Pulsar 220 F,15
+149,Bajaj Pulsar 220 F,15
+150,TVS Apache RTR 180,52
+151,Hero Passion X pro,26
+152,Bajaj Pulsar NS 200,16
+153,Bajaj Pulsar NS 200,16
+154,Yamaha Fazer ,61
+155,Honda Activa 4G,31
+156,TVS Sport ,54
+157,Yamaha FZ S V 2.0,60
+158,Honda Dream Yuga ,38
+159,Honda Activa 4G,31
+160,Bajaj Avenger Street 220,8
+161,TVS Apache RTR 180,52
+162,Bajaj Pulsar NS 200,16
+163,Bajaj Avenger 220 dtsi,7
+164,Hero Splender iSmart,28
+165,Activa 3g,1
+166,Hero Passion Pro,25
+167,TVS Apache RTR 160,51
+168,Honda CB Trigger,34
+169,Hero Splender iSmart,28
+170,Yamaha FZ S ,59
+171,Hero Passion Pro,25
+172,Bajaj Pulsar 135 LS,13
+173,Activa 4g,2
+174,Honda CB Unicorn,35
+175,Hero Honda CBZ extreme,22
+176,Honda Karizma,39
+177,Honda Activa 125,30
+178,TVS Jupyter,53
+179,Honda Karizma,39
+180,Hero Honda Passion Pro,23
+181,Hero Splender Plus,27
+182,Honda CB Shine,33
+183,Bajaj Discover 100,9
+184,Bajaj Pulsar 150,14
+185,Suzuki Access 125,50
+186,TVS Wego,55
+187,Honda CB twister,36
+188,Hero Glamour,21
+189,Hero Super Splendor,29
+190,Bajaj Pulsar 150,14
+191,Bajaj Discover 125,10
+192,Hero Hunk,24
+193,Hero  Ignitor Disc,19
+194,Hero  CBZ Xtreme,18
+195,Bajaj  ct 100,3
+196,Activa 3g,1
+197,Honda CB twister,36
+198,Bajaj Discover 125,10
+199,Honda CB Shine,33
+200,Bajaj Pulsar 150,14
+201,i20,84
+202,grand i10,82
+203,i10,83
+204,eon,75
+205,grand i10,82
+206,xcent,97
+207,grand i10,82
+208,i20,84
+209,grand i10,82
+210,i10,83
+211,elantra,74
+212,creta,72
+213,i20,84
+214,grand i10,82
+215,verna,94
+216,eon,75
+217,eon,75
+218,verna,94
+219,verna,94
+220,eon,75
+221,i20,84
+222,i20,84
+223,verna,94
+224,verna,94
+225,i10,83
+226,grand i10,82
+227,i10,83
+228,verna,94
+229,i20,84
+230,verna,94
+231,verna,94
+232,elantra,74
+233,grand i10,82
+234,grand i10,82
+235,verna,94
+236,eon,75
+237,creta,72
+238,verna,94
+239,eon,75
+240,verna,94
+241,xcent,97
+242,xcent,97
+243,i20,84
+244,verna,94
+245,verna,94
+246,i20,84
+247,verna,94
+248,i10,83
+249,i20,84
+250,creta,72
+251,city,69
+252,brio,66
+253,city,69
+254,city,69
+255,brio,66
+256,city,69
+257,city,69
+258,city,69
+259,amaze,64
+260,city,69
+261,brio,66
+262,amaze,64
+263,jazz,87
+264,amaze,64
+265,jazz,87
+266,amaze,64
+267,city,69
+268,brio,66
+269,city,69
+270,city,69
+271,city,69
+272,city,69
+273,jazz,87
+274,brio,66
+275,city,69
+276,city,69
+277,city,69
+278,jazz,87
+279,city,69
+280,brio,66
+281,city,69
+282,city,69
+283,city,69
+284,brio,66
+285,jazz,87
+286,jazz,87
+287,amaze,64
+288,city,69
+289,city,69
+290,amaze,64
+291,brio,66
+292,jazz,87
+293,city,69
+294,amaze,64
+295,city,69
+296,city,69
+297,brio,66
+298,city,69
+299,city,69
+300,brio,66
