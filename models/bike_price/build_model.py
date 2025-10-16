@@ -30,7 +30,8 @@ def test_model() -> None:
     model: RandomForestRegressor = load("./bike_ride_price.model.pkl")
     test = read_csv("./test_data.csv")
     test = test.dropna()
-    x_test = test[["driver-tip", "mta-tax", "distance", "toll-amount", "rate-code"]]
+    # x_test = test[["driver-tip", "mta-tax", "distance", "toll-amount", "rate-code"]]
+    x_test = test[["distance", "rate-code"]]
     y_true = test["total-amount"]
     y_pred = model.predict(x_test)
 
@@ -48,6 +49,7 @@ if __name__ == "__main__":
     exit(0)
     data = read_csv("./train_data.csv", parse_dates=False)
     data = data.dropna()
-    x_train = data[["driver-tip", "mta-tax", "distance", "toll-amount", "rate-code"]]
+    # x_train = data[["driver-tip", "mta-tax", "distance", "toll-amount", "rate-code"]]
+    x_train = data[["distance", "rate-code"]]
     y_train = data["total-amount"]
     build_model(x_train, y_train)

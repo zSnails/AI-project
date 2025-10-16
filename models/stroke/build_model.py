@@ -7,6 +7,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score, root_mean_squared_error
 from sklearn.tree import DecisionTreeClassifier
 
+
 def build_model(
     x_train: DataFrame | Series, y_train: DataFrame | Series | ndarray
 ) -> None:
@@ -42,14 +43,25 @@ def split_data() -> None:
     train_data.to_csv("train_data.csv")
     test_data.to_csv("test_data.csv")
 
+
 def test_model() -> None:
     model: RandomForestClassifier = load("./stroke.model.pkl")
     test = read_csv("./test_data.csv")
     y_true = test["stroke"]
-    x_test = test[["age", "hypertension", "heart_disease", "avg_glucose_level", "ever_married_code", "bmi"]]
+    x_test = test[
+        [
+            "age",
+            "hypertension",
+            "heart_disease",
+            "avg_glucose_level",
+            "ever_married_code",
+            "bmi",
+        ]
+    ]
     y_pred = model.predict(x_test)
     print("R² =", r2_score(y_true, y_pred))
     print("RMSE =", root_mean_squared_error(y_true, y_pred))
+
 
 if __name__ == "__main__":
     test_model()
@@ -57,5 +69,14 @@ if __name__ == "__main__":
     exit(0)
     train_data = read_csv("./train_data.csv")
     y_train = train_data["stroke"]
-    x_train = train_data[["age", "hypertension", "heart_disease", "avg_glucose_level", "ever_married_code", "bmi"]]
+    x_train = train_data[
+        [
+            "age",
+            "hypertension",
+            "heart_disease",
+            "avg_glucose_level",
+            "ever_married_code",
+            "bmi",
+        ]
+    ]
     build_model(x_train, y_train)
