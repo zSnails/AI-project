@@ -3,3 +3,4 @@ uploads/*.png
 .env
 __pycache__/
 *.pkl
+whisper-env/
