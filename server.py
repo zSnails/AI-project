@@ -49,7 +49,7 @@ def _parse_num(val: str, name: str, cast=float):
         abort(400, description=f"invalid value for {name}: {val}")
 
 
-def _stable_code(s: str, mod: int = 1000) -> int:
+def _stable_code(s: str | None, mod: int = 1000) -> int:
     if s is None:
         return 0
     if isinstance(s, (int, float)):
@@ -58,7 +58,7 @@ def _stable_code(s: str, mod: int = 1000) -> int:
     return int(h, 16) % mod
 
 
-def _map_aguacate_type(v: str) -> int:
+def _map_aguacate_type(v: str | None) -> int:
     if v is None:
         return 0
     if str(v).isdigit():
@@ -67,7 +67,7 @@ def _map_aguacate_type(v: str) -> int:
     return m.get(str(v).lower(), _stable_code(str(v), 200))
 
 
-def _map_region(v: str) -> int:
+def _map_region(v: str | None) -> int:
     # Regions are many; try numeric, a small common map, else stable hash
     if v is None:
         return 0
@@ -77,7 +77,7 @@ def _map_region(v: str) -> int:
     return common.get(str(v).lower(), _stable_code(str(v), 500))
 
 
-def _map_bool_yes_no(v: str) -> int:
+def _map_bool_yes_no(v: str | None) -> int:
     if v is None:
         return 0
     s = str(v).strip().lower()
@@ -91,7 +91,7 @@ def _map_bool_yes_no(v: str) -> int:
     return 0
 
 
-def _map_gender(v: str) -> int:
+def _map_gender(v: str | None) -> int:
     if v is None:
         return 0
     s = str(v).strip().lower()
@@ -104,7 +104,7 @@ def _map_gender(v: str) -> int:
     return 0
 
 
-def _map_contract(v: str) -> int:
+def _map_contract(v: str | None) -> int:
     if v is None:
         return 0
     s = str(v).strip().lower()
@@ -119,7 +119,7 @@ def _map_contract(v: str) -> int:
     return _stable_code(s, 10)
 
 
-def _map_internet_service(v: str) -> int:
+def _map_internet_service(v: str | None) -> int:
     if v is None:
         return 2
     s = str(v).strip().lower()
@@ -134,7 +134,7 @@ def _map_internet_service(v: str) -> int:
     return _stable_code(s, 5)
 
 
-def _map_payment_method(v: str) -> int:
+def _map_payment_method(v: str | None) -> int:
     if v is None:
         return 0
     s = str(v).strip().lower()
