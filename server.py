@@ -7,6 +7,8 @@ from uuid import uuid4
 from numpy import array
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.tree import DecisionTreeClassifier
+import hashlib
+from flask import abort
 """
 from azure.core.credentials import AzureKeyCredential
 from azure.ai.vision.face import FaceClient
@@ -36,6 +38,117 @@ app = Flask(__name__)
 
 app.config["UPLOAD_FOLDER"] = "./uploads/"
 app.config["RESULTS_FOLDER"] = "./detection_results/"
+
+
+def _parse_num(val: str, name: str, cast=float):
+    if val is None:
+        abort(400, description=f"missing parameter: {name}")
+    try:
+        return cast(val)
+    except Exception:
+        abort(400, description=f"invalid value for {name}: {val}")
+
+
+def _stable_code(s: str, mod: int = 1000) -> int:
+    if s is None:
+        return 0
+    if isinstance(s, (int, float)):
+        return int(s)
+    h = hashlib.md5(s.encode("utf-8")).hexdigest()[:8]
+    return int(h, 16) % mod
+
+
+def _map_aguacate_type(v: str) -> int:
+    if v is None:
+        return 0
+    if str(v).isdigit():
+        return int(v)
+    m = {"conventional": 0, "organic": 1}
+    return m.get(str(v).lower(), _stable_code(str(v), 200))
+
+
+def _map_region(v: str) -> int:
+    # Regions are many; try numeric, a small common map, else stable hash
+    if v is None:
+        return 0
+    if str(v).isdigit():
+        return int(v)
+    common = {"albany": 0, "totalus": 1}
+    return common.get(str(v).lower(), _stable_code(str(v), 500))
+
+
+def _map_bool_yes_no(v: str) -> int:
+    if v is None:
+        return 0
+    s = str(v).strip().lower()
+    if s in ("yes", "y", "true", "1"):
+        return 1
+    if s in ("no", "n", "false", "0"):
+        return 0
+    # keep numeric-like
+    if s.isdigit():
+        return int(s)
+    return 0
+
+
+def _map_gender(v: str) -> int:
+    if v is None:
+        return 0
+    s = str(v).strip().lower()
+    if s in ("female", "f"):
+        return 0
+    if s in ("male", "m"):
+        return 1
+    if s.isdigit():
+        return int(s)
+    return 0
+
+
+def _map_contract(v: str) -> int:
+    if v is None:
+        return 0
+    s = str(v).strip().lower()
+    if s == "month-to-month":
+        return 0
+    if s == "one year" or s == "one-year" or s == "one_year":
+        return 1
+    if s == "two year" or s == "two-year" or s == "two_year":
+        return 2
+    if s.isdigit():
+        return int(s)
+    return _stable_code(s, 10)
+
+
+def _map_internet_service(v: str) -> int:
+    if v is None:
+        return 2
+    s = str(v).strip().lower()
+    if s == "dsl":
+        return 0
+    if s == "fiber optic" or s == "fiber":
+        return 1
+    if s in ("no", "none"):
+        return 2
+    if s.isdigit():
+        return int(s)
+    return _stable_code(s, 5)
+
+
+def _map_payment_method(v: str) -> int:
+    if v is None:
+        return 0
+    s = str(v).strip().lower()
+    m = {
+        "electronic check": 0,
+        "mailed check": 1,
+        "bank transfer (automatic)": 2,
+        "credit card (automatic)": 3,
+    }
+    if s in m:
+        return m[s]
+    if s.isdigit():
+        return int(s)
+    return _stable_code(s, 10)
 
 
 bike_toll_model: RandomForestRegressor = load("./models/bike_price/bike_ride_price.model.pkl")
@@ -232,39 +345,34 @@ aguacate_model = load("./models/aguacate/modelo_precio_aguacate.pkl")
 
 @app.route("/api/models/aguacate", methods=["GET"])
 def aguacate_price():
-    total_volume = request.args.get("total-volume")
-    c4046 = request.args.get("4046")
-    c4225 = request.args.get("4225")
-    c4770 = request.args.get("4770")
-    total_bags = request.args.get("total-bags")
-    small_bags = request.args.get("small-bags")
-    large_bags = request.args.get("large-bags")
-    xlarge_bags = request.args.get("xlarge-bags")
-    type_code = request.args.get("type-code")
-    year = request.args.get("year")
-    region_code = request.args.get("region-code")
+    total_volume = _parse_num(request.args.get("total-volume"), "total-volume")
+    c4046 = _parse_num(request.args.get("4046"), "4046")
+    c4225 = _parse_num(request.args.get("4225"), "4225")
+    c4770 = _parse_num(request.args.get("4770"), "4770")
+    total_bags = _parse_num(request.args.get("total-bags"), "total-bags")
+    small_bags = _parse_num(request.args.get("small-bags"), "small-bags")
+    large_bags = _parse_num(request.args.get("large-bags"), "large-bags")
+    xlarge_bags = _parse_num(request.args.get("xlarge-bags"), "xlarge-bags")
+    # accept either type-code (numeric) or type (string)
+    type_code = _map_aguacate_type(request.args.get("type-code") or request.args.get("type"))
+    year = _parse_num(request.args.get("year"), "year", int)
+    region_code = _map_region(request.args.get("region-code") or request.args.get("region"))
 
-    return jsonify({
-        "prediction": float(
-            aguacate_model.predict(
-                array(
-                    [
-                        total_volume,
-                        c4046,
-                        c4225,
-                        c4770,
-                        total_bags,
-                        small_bags,
-                        large_bags,
-                        xlarge_bags,
-                        type_code,
-                        year,
-                        region_code,
-                    ]
-                ).reshape(1, -1)
-            )[0]
-        )
-    })
+    features = [
+        total_volume,
+        c4046,
+        c4225,
+        c4770,
+        total_bags,
+        small_bags,
+        large_bags,
+        xlarge_bags,
+        type_code,
+        year,
+        region_code,
+    ]
+
+    return jsonify({"prediction": float(aguacate_model.predict(array(features).reshape(1, -1))[0])})
 
 
 # Bitcoin: features used in training:
@@ -274,72 +382,59 @@ bitcoin_model = load("./models/bitcoin/modelo_direccion_bitcoin.pkl")
 
 @app.route("/api/models/bitcoin", methods=["GET"])
 def bitcoin_direction():
-    open_p = request.args.get("open")
-    high = request.args.get("high")
-    low = request.args.get("low")
-    close = request.args.get("close")
-    volume = request.args.get("volume")
-    market_cap = request.args.get("market-cap")
-    ret = request.args.get("return")
-    ma3 = request.args.get("ma3")
-    ma7 = request.args.get("ma7")
-    volatility = request.args.get("volatility")
+    open_p = _parse_num(request.args.get("open"), "open")
+    high = _parse_num(request.args.get("high"), "high")
+    low = _parse_num(request.args.get("low"), "low")
+    close = _parse_num(request.args.get("close"), "close")
+    volume = _parse_num(request.args.get("volume"), "volume")
+    market_cap = _parse_num(request.args.get("market-cap"), "market-cap")
+    ret = _parse_num(request.args.get("return"), "return")
+    ma3 = _parse_num(request.args.get("ma3"), "ma3")
+    ma7 = _parse_num(request.args.get("ma7"), "ma7")
+    volatility = _parse_num(request.args.get("volatility"), "volatility")
 
-    return jsonify({
-        "prediction": int(
-            bitcoin_model.predict(
-                array(
-                    [open_p, high, low, close, volume, market_cap, ret, ma3, ma7, volatility]
-                ).reshape(1, -1)
-            )[0]
-        )
-    })
+    features = [open_p, high, low, close, volume, market_cap, ret, ma3, ma7, volatility]
+    return jsonify({"prediction": int(bitcoin_model.predict(array(features).reshape(1, -1))[0])})
 
 
-# Grasa (bodyfat): order from CSV after dropping BodyFat and Density:
+# Grasa corporal: features (after preprocessing) roughly:
 # Age, Weight, Height, Neck, Chest, Abdomen, Hip, Thigh, Knee, Ankle, Biceps, Forearm, Wrist
 grasa_model = load("./models/grasa/bodyfat_model.pkl")
 
 
 @app.route("/api/models/grasa", methods=["GET"])
 def grasa_prediction():
-    age = request.args.get("age")
-    weight = request.args.get("weight")
-    height = request.args.get("height")
-    neck = request.args.get("neck")
-    chest = request.args.get("chest")
-    abdomen = request.args.get("abdomen")
-    hip = request.args.get("hip")
-    thigh = request.args.get("thigh")
-    knee = request.args.get("knee")
-    ankle = request.args.get("ankle")
-    biceps = request.args.get("biceps")
-    forearm = request.args.get("forearm")
-    wrist = request.args.get("wrist")
+    age = _parse_num(request.args.get("age"), "age", int)
+    weight = _parse_num(request.args.get("weight"), "weight")
+    height = _parse_num(request.args.get("height"), "height")
+    neck = _parse_num(request.args.get("neck"), "neck")
+    chest = _parse_num(request.args.get("chest"), "chest")
+    abdomen = _parse_num(request.args.get("abdomen"), "abdomen")
+    hip = _parse_num(request.args.get("hip"), "hip")
+    thigh = _parse_num(request.args.get("thigh"), "thigh")
+    knee = _parse_num(request.args.get("knee"), "knee")
+    ankle = _parse_num(request.args.get("ankle"), "ankle")
+    biceps = _parse_num(request.args.get("biceps"), "biceps")
+    forearm = _parse_num(request.args.get("forearm"), "forearm")
+    wrist = _parse_num(request.args.get("wrist"), "wrist")
 
-    return jsonify({
-        "prediction": float(
-            grasa_model.predict(
-                array(
-                    [
-                        age,
-                        weight,
-                        height,
-                        neck,
-                        chest,
-                        abdomen,
-                        hip,
-                        thigh,
-                        knee,
-                        ankle,
-                        biceps,
-                        forearm,
-                        wrist,
-                    ]
-                ).reshape(1, -1)
-            )[0]
-        )
-    })
+    features = [
+        age,
+        weight,
+        height,
+        neck,
+        chest,
+        abdomen,
+        hip,
+        thigh,
+        knee,
+        ankle,
+        biceps,
+        forearm,
+        wrist,
+    ]
+
+    return jsonify({"prediction": float(grasa_model.predict(array(features).reshape(1, -1))[0])})
 
 
 # Telecomunicaciones: features (after preprocessing) roughly:
@@ -352,25 +447,25 @@ telecom_model = load("./models/telecomunicaciones/telecomunicaciones_model.pkl")
 
 @app.route("/api/models/telecomunicaciones", methods=["GET"])
 def telecom_prediction():
-    gender = request.args.get("gender")
-    senior = request.args.get("senior-citizen")
-    partner = request.args.get("partner")
-    dependents = request.args.get("dependents")
-    tenure = request.args.get("tenure")
-    phone_service = request.args.get("phone-service")
-    multiple_lines = request.args.get("multiple-lines")
-    internet_service = request.args.get("internet-service")
-    online_security = request.args.get("online-security")
-    online_backup = request.args.get("online-backup")
-    device_protection = request.args.get("device-protection")
-    tech_support = request.args.get("tech-support")
-    streaming_tv = request.args.get("streaming-tv")
-    streaming_movies = request.args.get("streaming-movies")
-    contract = request.args.get("contract")
-    paperless = request.args.get("paperless-billing")
-    payment_method = request.args.get("payment-method")
-    monthly_charges = request.args.get("monthly-charges")
-    total_charges = request.args.get("total-charges")
+    gender = _map_gender(request.args.get("gender"))
+    senior = _parse_num(request.args.get("senior-citizen"), "senior-citizen", int)
+    partner = _map_bool_yes_no(request.args.get("partner"))
+    dependents = _map_bool_yes_no(request.args.get("dependents"))
+    tenure = _parse_num(request.args.get("tenure"), "tenure", int)
+    phone_service = _map_bool_yes_no(request.args.get("phone-service"))
+    multiple_lines = _map_bool_yes_no(request.args.get("multiple-lines"))
+    internet_service = _map_internet_service(request.args.get("internet-service"))
+    online_security = _map_bool_yes_no(request.args.get("online-security"))
+    online_backup = _map_bool_yes_no(request.args.get("online-backup"))
+    device_protection = _map_bool_yes_no(request.args.get("device-protection"))
+    tech_support = _map_bool_yes_no(request.args.get("tech-support"))
+    streaming_tv = _map_bool_yes_no(request.args.get("streaming-tv"))
+    streaming_movies = _map_bool_yes_no(request.args.get("streaming-movies"))
+    contract = _map_contract(request.args.get("contract"))
+    paperless = _map_bool_yes_no(request.args.get("paperless-billing"))
+    payment_method = _map_payment_method(request.args.get("payment-method"))
+    monthly_charges = _parse_num(request.args.get("monthly-charges"), "monthly-charges")
+    total_charges = _parse_num(request.args.get("total-charges"), "total-charges")
 
     data = array([
         [
@@ -407,17 +502,17 @@ vino_model = load("./models/vino/vino_quality_model.pkl")
 def vino_prediction():
     type_raw = request.args.get("type")
     type_code = 1 if (type_raw is not None and type_raw.lower() == "white") else 0
-    fixed_acidity = request.args.get("fixed-acidity")
-    volatile_acidity = request.args.get("volatile-acidity")
-    citric_acid = request.args.get("citric-acid")
-    residual_sugar = request.args.get("residual-sugar")
-    chlorides = request.args.get("chlorides")
-    free_sulfur = request.args.get("free-sulfur-dioxide")
-    total_sulfur = request.args.get("total-sulfur-dioxide")
-    density = request.args.get("density")
-    ph = request.args.get("pH")
-    sulphates = request.args.get("sulphates")
-    alcohol = request.args.get("alcohol")
+    fixed_acidity = _parse_num(request.args.get("fixed-acidity"), "fixed-acidity")
+    volatile_acidity = _parse_num(request.args.get("volatile-acidity"), "volatile-acidity")
+    citric_acid = _parse_num(request.args.get("citric-acid"), "citric-acid")
+    residual_sugar = _parse_num(request.args.get("residual-sugar"), "residual-sugar")
+    chlorides = _parse_num(request.args.get("chlorides"), "chlorides")
+    free_sulfur = _parse_num(request.args.get("free-sulfur-dioxide"), "free-sulfur-dioxide")
+    total_sulfur = _parse_num(request.args.get("total-sulfur-dioxide"), "total-sulfur-dioxide")
+    density = _parse_num(request.args.get("density"), "density")
+    ph = _parse_num(request.args.get("pH") or request.args.get("ph"), "pH")
+    sulphates = _parse_num(request.args.get("sulphates"), "sulphates")
+    alcohol = _parse_num(request.args.get("alcohol"), "alcohol")
 
     # We attempt to match the training order by placing the type dummy first
     features = [
@@ -435,9 +530,7 @@ def vino_prediction():
         alcohol,
     ]
 
-    return jsonify({
-        "prediction": float(vino_model.predict(array(features).reshape(1, -1))[0])
-    })
+    return jsonify({"prediction": float(vino_model.predict(array(features).reshape(1, -1))[0])})
 
 """
 @app.route("/static/<path>", methods=["GET"])
