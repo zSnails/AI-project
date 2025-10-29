@@ -1,16 +1,43 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_file, send_from_directory
+from os.path import join
+from typing import List
+from face import DetectionResult, generate_labelled_image
 from joblib import load
+from uuid import uuid4
 from numpy import array
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.tree import DecisionTreeClassifier
+from azure.core.credentials import AzureKeyCredential
+from azure.ai.vision.face import FaceClient
+from azure.ai.vision.face.models import (
+    FaceAttributeTypeDetection01,
+    FaceAttributeTypeDetection03,
+    FaceDetectionModel,
+    FaceRecognitionModel,
+)
+from dotenv import load_dotenv
+from os import environ
+
+load_dotenv()
+
+
+ENDPOINT = environ["AZURE_FACE_ENDPOINT"]
+API_KEY = environ["AZURE_API_KEY"]
+
+id = environ["PERSON_GROUP_ID"]
+PERSON_GROUP_ID = id if id != "" else str(uuid4())
+
+
+face_client = FaceClient(endpoint=ENDPOINT, credential=AzureKeyCredential(API_KEY))
 
 
 app = Flask(__name__)
 
+app.config["UPLOAD_FOLDER"] = "./uploads/"
+app.config["RESULTS_FOLDER"] = "./detection_results/"
 
-bike_toll_model: RandomForestRegressor = load(
-    "./models/bike_price/bike_ride_price.model.pkl"
-)
+
+bike_toll_model: RandomForestRegressor = load("./models/bike_price/bike_ride_price.model.pkl")
 
 
 @app.route("/api/models/bike-toll", methods=["GET"])
@@ -19,16 +46,14 @@ def bike_toll():
     rate_code = request.args.get("rate-code")
     return jsonify(
         {
-            "prediction": float(bike_toll_model.predict(
-                array([distance, rate_code]).reshape(1, -1)
-            )[0])
+            "prediction": float(
+                bike_toll_model.predict(array([distance, rate_code]).reshape(1, -1))[0]
+            )
         }
     )
 
 
-car_price_model: RandomForestRegressor = load(
-    "./models/car_price/car_price.model.pkl"
-)
+car_price_model: RandomForestRegressor = load("./models/car_price/car_price.model.pkl")
 
 
 @app.route("/api/models/car-price", methods=["GET"])
@@ -43,25 +68,27 @@ def car_price():
     owner = request.args.get("owner")
     return jsonify(
         {
-            "prediction": float(car_price_model.predict(
-                array([
-                    car_name_code,
-                    year,
-                    present_price,
-                    kms_driven,
-                    fuel_type_code,
-                    seller_type_code,
-                    transmission_code,
-                    owner,
-                ]).reshape(1, -1)
-            )[0])
+            "prediction": float(
+                car_price_model.predict(
+                    array(
+                        [
+                            car_name_code,
+                            year,
+                            present_price,
+                            kms_driven,
+                            fuel_type_code,
+                            seller_type_code,
+                            transmission_code,
+                            owner,
+                        ]
+                    ).reshape(1, -1)
+                )[0]
+            )
         }
     )
 
 
-cirrhosis_model: DecisionTreeClassifier = load(
-    "./models/cirrhosis/cirrhosis.model.pkl"
-)
+cirrhosis_model: DecisionTreeClassifier = load("./models/cirrhosis/cirrhosis.model.pkl")
 
 cirrhosis_status_codes = ["C", "CL", "D"]
 
@@ -121,9 +148,7 @@ def cirrhosis():
     )
 
 
-hepatitis_model: RandomForestRegressor = load(
-    "./models/hepatitis/hepatitis.model.pkl"
-)
+hepatitis_model: RandomForestRegressor = load("./models/hepatitis/hepatitis.model.pkl")
 
 hepatitis_codes = [
     "Blood Donor",
@@ -191,8 +216,46 @@ def stroke_prediction():
         ]
     )
 
+    return jsonify({"prediction": int(stroke_model.predict(data.reshape(1, -1))[0]) == 1})
+
+
+@app.route("/static/<path>", methods=["GET"])
+def serve_detection_results(path: str):
+    return send_from_directory(app.config["RESULTS_FOLDER"], path)
+
+
+@app.route("/api/models/face-recognition", methods=["POST"])
+def face_recognition():
+    if not len(request.files) > 0:
+        return jsonify({ "status": 400, "message": "missing image (you did not upload an image)"}), 400
+    with face_client:
+        image = request.files["image"]
+        filepath = join(app.config['UPLOAD_FOLDER'], image.filename if image.filename is not None else f"{uuid4()}.png")
+        image.save(filepath) # type: ignore
+        with open(filepath, "rb") as image:
+            detected_faces: List[DetectionResult] = face_client.detect(
+                image.read(-1),
+                detection_model=FaceDetectionModel.DETECTION03,
+                recognition_model=FaceRecognitionModel.RECOGNITION04,
+                return_face_id=False,
+                return_face_attributes=[
+                    FaceAttributeTypeDetection03.HEAD_POSE,
+                    FaceAttributeTypeDetection01.GLASSES,
+                    FaceAttributeTypeDetection01.OCCLUSION,
+                ],
+            )  # type:ignore
+            filename = generate_labelled_image(
+                image,
+                detected_faces,
+                directory=app.config["RESULTS_FOLDER"],
+                output=f"{uuid4()}.png",
+            )
+
     return jsonify(
-        {"prediction": int(stroke_model.predict(data.reshape(1, -1))[0]) == 1}
+        {
+            "resultUrl": f"http://localhost:8080/static/{filename}",
+            "detectedFaces": list(map(lambda a: a.as_dict(), detected_faces)),  # type:ignore
+        }
     )
 
 
