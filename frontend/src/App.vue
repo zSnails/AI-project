@@ -5,6 +5,11 @@
       <p class="menu-label">General</p>
       <ul class="menu-list">
         <li><RouterLink to="/models/car-price">Car Price</RouterLink></li>
+        <li><RouterLink to="/models/bike-toll">Bike Toll</RouterLink></li>
+        <li><RouterLink to="/models/cirrhosis">Cirrhosis</RouterLink></li>
+        <li><RouterLink to="/models/hepatitis">Hepatitis</RouterLink></li>
+        <li><RouterLink to="/models/stroke">Stroke</RouterLink></li>
+        <li><RouterLink to="/models/face-recognition">Facial Recognition</RouterLink></li>
       </ul>
     </aside>
     <main class="mt-5 mx-5">
