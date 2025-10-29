@@ -1,0 +1,394 @@
+[
+    {
+        "name": "800",
+        "code": 0
+    },
+    {
+        "name": "Activa 3g",
+        "code": 1
+    },
+    {
+        "name": "Activa 4g",
+        "code": 2
+    },
+    {
+        "name": "Bajaj  ct 100",
+        "code": 3
+    },
+    {
+        "name": "Bajaj Avenger 150",
+        "code": 4
+    },
+    {
+        "name": "Bajaj Avenger 150 street",
+        "code": 5
+    },
+    {
+        "name": "Bajaj Avenger 220",
+        "code": 6
+    },
+    {
+        "name": "Bajaj Avenger 220 dtsi",
+        "code": 7
+    },
+    {
+        "name": "Bajaj Avenger Street 220",
+        "code": 8
+    },
+    {
+        "name": "Bajaj Discover 100",
+        "code": 9
+    },
+    {
+        "name": "Bajaj Discover 125",
+        "code": 10
+    },
+    {
+        "name": "Bajaj Dominar 400",
+        "code": 11
+    },
+    {
+        "name": "Bajaj Pulsar  NS 200",
+        "code": 12
+    },
+    {
+        "name": "Bajaj Pulsar 135 LS",
+        "code": 13
+    },
+    {
+        "name": "Bajaj Pulsar 150",
+        "code": 14
+    },
+    {
+        "name": "Bajaj Pulsar 220 F",
+        "code": 15
+    },
+    {
+        "name": "Bajaj Pulsar NS 200",
+        "code": 16
+    },
+    {
+        "name": "Bajaj Pulsar RS200",
+        "code": 17
+    },
+    {
+        "name": "Hero  CBZ Xtreme",
+        "code": 18
+    },
+    {
+        "name": "Hero  Ignitor Disc",
+        "code": 19
+    },
+    {
+        "name": "Hero Extreme",
+        "code": 20
+    },
+    {
+        "name": "Hero Glamour",
+        "code": 21
+    },
+    {
+        "name": "Hero Honda CBZ extreme",
+        "code": 22
+    },
+    {
+        "name": "Hero Honda Passion Pro",
+        "code": 23
+    },
+    {
+        "name": "Hero Hunk",
+        "code": 24
+    },
+    {
+        "name": "Hero Passion Pro",
+        "code": 25
+    },
+    {
+        "name": "Hero Passion X pro",
+        "code": 26
+    },
+    {
+        "name": "Hero Splender Plus",
+        "code": 27
+    },
+    {
+        "name": "Hero Splender iSmart",
+        "code": 28
+    },
+    {
+        "name": "Hero Super Splendor",
+        "code": 29
+    },
+    {
+        "name": "Honda Activa 125",
+        "code": 30
+    },
+    {
+        "name": "Honda Activa 4G",
+        "code": 31
+    },
+    {
+        "name": "Honda CB Hornet 160R",
+        "code": 32
+    },
+    {
+        "name": "Honda CB Shine",
+        "code": 33
+    },
+    {
+        "name": "Honda CB Trigger",
+        "code": 34
+    },
+    {
+        "name": "Honda CB Unicorn",
+        "code": 35
+    },
+    {
+        "name": "Honda CB twister",
+        "code": 36
+    },
+    {
+        "name": "Honda CBR 150",
+        "code": 37
+    },
+    {
+        "name": "Honda Dream Yuga ",
+        "code": 38
+    },
+    {
+        "name": "Honda Karizma",
+        "code": 39
+    },
+    {
+        "name": "Hyosung GT250R",
+        "code": 40
+    },
+    {
+        "name": "KTM 390 Duke ",
+        "code": 41
+    },
+    {
+        "name": "KTM RC200",
+        "code": 42
+    },
+    {
+        "name": "KTM RC390",
+        "code": 43
+    },
+    {
+        "name": "Mahindra Mojo XT300",
+        "code": 44
+    },
+    {
+        "name": "Royal Enfield Bullet 350",
+        "code": 45
+    },
+    {
+        "name": "Royal Enfield Classic 350",
+        "code": 46
+    },
+    {
+        "name": "Royal Enfield Classic 500",
+        "code": 47
+    },
+    {
+        "name": "Royal Enfield Thunder 350",
+        "code": 48
+    },
+    {
+        "name": "Royal Enfield Thunder 500",
+        "code": 49
+    },
+    {
+        "name": "Suzuki Access 125",
+        "code": 50
+    },
+    {
+        "name": "TVS Apache RTR 160",
+        "code": 51
+    },
+    {
+        "name": "TVS Apache RTR 180",
+        "code": 52
+    },
+    {
+        "name": "TVS Jupyter",
+        "code": 53
+    },
+    {
+        "name": "TVS Sport ",
+        "code": 54
+    },
+    {
+        "name": "TVS Wego",
+        "code": 55
+    },
+    {
+        "name": "UM Renegade Mojave",
+        "code": 56
+    },
+    {
+        "name": "Yamaha FZ  v 2.0",
+        "code": 57
+    },
+    {
+        "name": "Yamaha FZ 16",
+        "code": 58
+    },
+    {
+        "name": "Yamaha FZ S ",
+        "code": 59
+    },
+    {
+        "name": "Yamaha FZ S V 2.0",
+        "code": 60
+    },
+    {
+        "name": "Yamaha Fazer ",
+        "code": 61
+    },
+    {
+        "name": "alto 800",
+        "code": 62
+    },
+    {
+        "name": "alto k10",
+        "code": 63
+    },
+    {
+        "name": "amaze",
+        "code": 64
+    },
+    {
+        "name": "baleno",
+        "code": 65
+    },
+    {
+        "name": "brio",
+        "code": 66
+    },
+    {
+        "name": "camry",
+        "code": 67
+    },
+    {
+        "name": "ciaz",
+        "code": 68
+    },
+    {
+        "name": "city",
+        "code": 69
+    },
+    {
+        "name": "corolla",
+        "code": 70
+    },
+    {
+        "name": "corolla altis",
+        "code": 71
+    },
+    {
+        "name": "creta",
+        "code": 72
+    },
+    {
+        "name": "dzire",
+        "code": 73
+    },
+    {
+        "name": "elantra",
+        "code": 74
+    },
+    {
+        "name": "eon",
+        "code": 75
+    },
+    {
+        "name": "ertiga",
+        "code": 76
+    },
+    {
+        "name": "etios cross",
+        "code": 77
+    },
+    {
+        "name": "etios g",
+        "code": 78
+    },
+    {
+        "name": "etios gd",
+        "code": 79
+    },
+    {
+        "name": "etios liva",
+        "code": 80
+    },
+    {
+        "name": "fortuner",
+        "code": 81
+    },
+    {
+        "name": "grand i10",
+        "code": 82
+    },
+    {
+        "name": "i10",
+        "code": 83
+    },
+    {
+        "name": "i20",
+        "code": 84
+    },
+    {
+        "name": "ignis",
+        "code": 85
+    },
+    {
+        "name": "innova",
+        "code": 86
+    },
+    {
+        "name": "jazz",
+        "code": 87
+    },
+    {
+        "name": "land cruiser",
+        "code": 88
+    },
+    {
+        "name": "omni",
+        "code": 89
+    },
+    {
+        "name": "ritz",
+        "code": 90
+    },
+    {
+        "name": "s cross",
+        "code": 91
+    },
+    {
+        "name": "swift",
+        "code": 92
+    },
+    {
+        "name": "sx4",
+        "code": 93
+    },
+    {
+        "name": "verna",
+        "code": 94
+    },
+    {
+        "name": "vitara brezza",
+        "code": 95
+    },
+    {
+        "name": "wagon r",
+        "code": 96
+    },
+    {
+        "name": "xcent",
+        "code": 97
+    }
+]
