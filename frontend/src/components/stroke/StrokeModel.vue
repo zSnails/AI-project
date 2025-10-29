@@ -4,6 +4,14 @@ import { ref } from 'vue';
 const prediction = ref(null);
 async function submit(form: any) {
   const formData = new FormData(form.target as unknown as HTMLFormElement);
+
+  const hypertension = formData.get("hypertension")
+  formData.set("hypertension", hypertension === "on" ? '1' : '0');
+  const heartDisease = formData.get("heart-disease")
+  formData.set("heart-disease", heartDisease === "on" ? '1' : '0');
+  const married = formData.get("ever-married-code")
+  formData.set("ever-married-code", married === "on" ? '1' : '0');
+
   const params = new URLSearchParams(formData as unknown as any);
   const response = await fetch(`http://localhost:8080/api/models/stroke?${params.toString()}`, { method: "GET" });
   const result = await response.json();
