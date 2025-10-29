@@ -34,7 +34,7 @@ PERSON_GROUP_ID = id if id != "" else str(uuid4())
 face_client = FaceClient(endpoint=ENDPOINT, credential=AzureKeyCredential(API_KEY))
 """
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="./static")
 
 app.config["UPLOAD_FOLDER"] = "./uploads/"
 app.config["RESULTS_FOLDER"] = "./detection_results/"
@@ -152,6 +152,13 @@ def _map_payment_method(v: str) -> int:
 
 
 bike_toll_model: RandomForestRegressor = load("./models/bike_price/bike_ride_price.model.pkl")
+
+
+@app.route("/", methods=["GET"])
+def serve_vue_frontend():
+    if app.static_folder:
+        return send_from_directory(app.static_folder, "index.html")
+    return jsonify({"code": 500, "message": "Internal Server Error"}), 500
 
 
 @app.route("/api/models/bike-toll", methods=["GET"])
@@ -541,11 +548,17 @@ def serve_detection_results(path: str):
 @app.route("/api/models/face-recognition", methods=["POST"])
 def face_recognition():
     if not len(request.files) > 0:
-        return jsonify({ "status": 400, "message": "missing image (you did not upload an image)"}), 400
+        return (
+            jsonify({"status": 400, "message": "missing image (you did not upload an image)"}),
+            400,
+        )
     with face_client:
         image = request.files["image"]
-        filepath = join(app.config['UPLOAD_FOLDER'], image.filename if image.filename is not None else f"{uuid4()}.png")
-        image.save(filepath) # type: ignore
+        filepath = join(
+            app.config["UPLOAD_FOLDER"],
+            image.filename if image.filename is not None else f"{uuid4()}.png",
+        )
+        image.save(filepath)  # type: ignore
         with open(filepath, "rb") as image:
             detected_faces: List[DetectionResult] = face_client.detect(
                 image.read(-1),
