@@ -552,31 +552,30 @@ def face_recognition():
             jsonify({"status": 400, "message": "missing image (you did not upload an image)"}),
             400,
         )
-    with face_client:
-        image = request.files["image"]
-        filepath = join(
-            app.config["UPLOAD_FOLDER"],
-            image.filename if image.filename is not None else f"{uuid4()}.png",
+    image = request.files["image"]
+    filepath = join(
+        app.config["UPLOAD_FOLDER"],
+        image.filename if image.filename is not None else f"{uuid4()}.png",
+    )
+    image.save(filepath)  # type: ignore
+    with open(filepath, "rb") as image:
+        detected_faces: List[DetectionResult] = face_client.detect(
+            image.read(-1),
+            detection_model=FaceDetectionModel.DETECTION03,
+            recognition_model=FaceRecognitionModel.RECOGNITION04,
+            return_face_id=False,
+            return_face_attributes=[
+                FaceAttributeTypeDetection03.HEAD_POSE,
+                FaceAttributeTypeDetection01.GLASSES,
+                FaceAttributeTypeDetection01.OCCLUSION,
+            ],
+        )  # type:ignore
+        filename = generate_labelled_image(
+            image,
+            detected_faces,
+            directory=app.config["RESULTS_FOLDER"],
+            output=f"{uuid4()}.png",
         )
-        image.save(filepath)  # type: ignore
-        with open(filepath, "rb") as image:
-            detected_faces: List[DetectionResult] = face_client.detect(
-                image.read(-1),
-                detection_model=FaceDetectionModel.DETECTION03,
-                recognition_model=FaceRecognitionModel.RECOGNITION04,
-                return_face_id=False,
-                return_face_attributes=[
-                    FaceAttributeTypeDetection03.HEAD_POSE,
-                    FaceAttributeTypeDetection01.GLASSES,
-                    FaceAttributeTypeDetection01.OCCLUSION,
-                ],
-            )  # type:ignore
-            filename = generate_labelled_image(
-                image,
-                detected_faces,
-                directory=app.config["RESULTS_FOLDER"],
-                output=f"{uuid4()}.png",
-            )
 
     return jsonify(
         {
@@ -587,3 +586,4 @@ def face_recognition():
 
 if __name__ == "__main__":
     app.run("0.0.0.0", 8080, debug=True)
+    face_client.close()
