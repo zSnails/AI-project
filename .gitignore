@@ -2,3 +2,4 @@ detection_results/*.png
 uploads/*.png
 .env
 __pycache__/
+*.pkl
