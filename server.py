@@ -1,7 +1,8 @@
-from flask import Flask, jsonify, request, send_file, send_from_directory
+from flask import Flask, jsonify, request, send_from_directory
+from flask_cors import CORS
 from os.path import join
 from typing import List
-#from face import DetectionResult, generate_labelled_image
+from face import DetectionResult, generate_labelled_image
 from joblib import load
 from uuid import uuid4
 from numpy import array
@@ -32,15 +33,15 @@ PERSON_GROUP_ID = id if id != "" else str(uuid4())
 
 
 face_client = FaceClient(endpoint=ENDPOINT, credential=AzureKeyCredential(API_KEY))
-"""
 
 app = Flask(__name__, static_folder="./static")
+CORS(app)
 
 app.config["UPLOAD_FOLDER"] = "./uploads/"
 app.config["RESULTS_FOLDER"] = "./detection_results/"
 
 
-def _parse_num(val: str, name: str, cast=float):
+def _parse_num(val: str | None, name: str, cast=float):
     if val is None:
         abort(400, description=f"missing parameter: {name}")
     try:
