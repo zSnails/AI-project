@@ -1,12 +1,13 @@
 from flask import Flask, jsonify, request, send_file, send_from_directory
 from os.path import join
 from typing import List
-from face import DetectionResult, generate_labelled_image
+#from face import DetectionResult, generate_labelled_image
 from joblib import load
 from uuid import uuid4
 from numpy import array
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.tree import DecisionTreeClassifier
+"""
 from azure.core.credentials import AzureKeyCredential
 from azure.ai.vision.face import FaceClient
 from azure.ai.vision.face.models import (
@@ -29,7 +30,7 @@ PERSON_GROUP_ID = id if id != "" else str(uuid4())
 
 
 face_client = FaceClient(endpoint=ENDPOINT, credential=AzureKeyCredential(API_KEY))
-
+"""
 
 app = Flask(__name__)
 
@@ -219,6 +220,226 @@ def stroke_prediction():
     return jsonify({"prediction": int(stroke_model.predict(data.reshape(1, -1))[0]) == 1})
 
 
+# --- Model endpoints added: aguacate, bitcoin, grasa, telecomunicaciones, vino
+# These endpoints follow the project's existing style: accept features via query
+# params and return a JSON with the model prediction.
+
+
+# Aguacate: features order (as trained):
+# Total Volume, 4046, 4225, 4770, Total Bags, Small Bags, Large Bags, XLarge Bags, type (encoded), year, region (encoded)
+aguacate_model = load("./models/aguacate/modelo_precio_aguacate.pkl")
+
+
+@app.route("/api/models/aguacate", methods=["GET"])
+def aguacate_price():
+    total_volume = request.args.get("total-volume")
+    c4046 = request.args.get("4046")
+    c4225 = request.args.get("4225")
+    c4770 = request.args.get("4770")
+    total_bags = request.args.get("total-bags")
+    small_bags = request.args.get("small-bags")
+    large_bags = request.args.get("large-bags")
+    xlarge_bags = request.args.get("xlarge-bags")
+    type_code = request.args.get("type-code")
+    year = request.args.get("year")
+    region_code = request.args.get("region-code")
+
+    return jsonify({
+        "prediction": float(
+            aguacate_model.predict(
+                array(
+                    [
+                        total_volume,
+                        c4046,
+                        c4225,
+                        c4770,
+                        total_bags,
+                        small_bags,
+                        large_bags,
+                        xlarge_bags,
+                        type_code,
+                        year,
+                        region_code,
+                    ]
+                ).reshape(1, -1)
+            )[0]
+        )
+    })
+
+
+# Bitcoin: features used in training:
+# Open, High, Low, Close, Volume, Market Cap, Return, MA3, MA7, Volatility
+bitcoin_model = load("./models/bitcoin/modelo_direccion_bitcoin.pkl")
+
+
+@app.route("/api/models/bitcoin", methods=["GET"])
+def bitcoin_direction():
+    open_p = request.args.get("open")
+    high = request.args.get("high")
+    low = request.args.get("low")
+    close = request.args.get("close")
+    volume = request.args.get("volume")
+    market_cap = request.args.get("market-cap")
+    ret = request.args.get("return")
+    ma3 = request.args.get("ma3")
+    ma7 = request.args.get("ma7")
+    volatility = request.args.get("volatility")
+
+    return jsonify({
+        "prediction": int(
+            bitcoin_model.predict(
+                array(
+                    [open_p, high, low, close, volume, market_cap, ret, ma3, ma7, volatility]
+                ).reshape(1, -1)
+            )[0]
+        )
+    })
+
+
+# Grasa (bodyfat): order from CSV after dropping BodyFat and Density:
+# Age, Weight, Height, Neck, Chest, Abdomen, Hip, Thigh, Knee, Ankle, Biceps, Forearm, Wrist
+grasa_model = load("./models/grasa/bodyfat_model.pkl")
+
+
+@app.route("/api/models/grasa", methods=["GET"])
+def grasa_prediction():
+    age = request.args.get("age")
+    weight = request.args.get("weight")
+    height = request.args.get("height")
+    neck = request.args.get("neck")
+    chest = request.args.get("chest")
+    abdomen = request.args.get("abdomen")
+    hip = request.args.get("hip")
+    thigh = request.args.get("thigh")
+    knee = request.args.get("knee")
+    ankle = request.args.get("ankle")
+    biceps = request.args.get("biceps")
+    forearm = request.args.get("forearm")
+    wrist = request.args.get("wrist")
+
+    return jsonify({
+        "prediction": float(
+            grasa_model.predict(
+                array(
+                    [
+                        age,
+                        weight,
+                        height,
+                        neck,
+                        chest,
+                        abdomen,
+                        hip,
+                        thigh,
+                        knee,
+                        ankle,
+                        biceps,
+                        forearm,
+                        wrist,
+                    ]
+                ).reshape(1, -1)
+            )[0]
+        )
+    })
+
+
+# Telecomunicaciones: features (after preprocessing) roughly:
+# gender, SeniorCitizen, Partner, Dependents, tenure, PhoneService, MultipleLines,
+# InternetService, OnlineSecurity, OnlineBackup, DeviceProtection, TechSupport,
+# StreamingTV, StreamingMovies, Contract, PaperlessBilling, PaymentMethod,
+# MonthlyCharges, TotalCharges
+telecom_model = load("./models/telecomunicaciones/telecomunicaciones_model.pkl")
+
+
+@app.route("/api/models/telecomunicaciones", methods=["GET"])
+def telecom_prediction():
+    gender = request.args.get("gender")
+    senior = request.args.get("senior-citizen")
+    partner = request.args.get("partner")
+    dependents = request.args.get("dependents")
+    tenure = request.args.get("tenure")
+    phone_service = request.args.get("phone-service")
+    multiple_lines = request.args.get("multiple-lines")
+    internet_service = request.args.get("internet-service")
+    online_security = request.args.get("online-security")
+    online_backup = request.args.get("online-backup")
+    device_protection = request.args.get("device-protection")
+    tech_support = request.args.get("tech-support")
+    streaming_tv = request.args.get("streaming-tv")
+    streaming_movies = request.args.get("streaming-movies")
+    contract = request.args.get("contract")
+    paperless = request.args.get("paperless-billing")
+    payment_method = request.args.get("payment-method")
+    monthly_charges = request.args.get("monthly-charges")
+    total_charges = request.args.get("total-charges")
+
+    data = array([
+        [
+            gender,
+            senior,
+            partner,
+            dependents,
+            tenure,
+            phone_service,
+            multiple_lines,
+            internet_service,
+            online_security,
+            online_backup,
+            device_protection,
+            tech_support,
+            streaming_tv,
+            streaming_movies,
+            contract,
+            paperless,
+            payment_method,
+            monthly_charges,
+            total_charges,
+        ]
+    ])
+
+    return jsonify({"prediction": int(telecom_model.predict(data)[0]) == 1})
+
+
+# Vino: features (original CSV order) with `type` mapped to dummy (white -> 1, else 0)
+vino_model = load("./models/vino/vino_quality_model.pkl")
+
+
+@app.route("/api/models/vino", methods=["GET"])
+def vino_prediction():
+    type_raw = request.args.get("type")
+    type_code = 1 if (type_raw is not None and type_raw.lower() == "white") else 0
+    fixed_acidity = request.args.get("fixed-acidity")
+    volatile_acidity = request.args.get("volatile-acidity")
+    citric_acid = request.args.get("citric-acid")
+    residual_sugar = request.args.get("residual-sugar")
+    chlorides = request.args.get("chlorides")
+    free_sulfur = request.args.get("free-sulfur-dioxide")
+    total_sulfur = request.args.get("total-sulfur-dioxide")
+    density = request.args.get("density")
+    ph = request.args.get("pH")
+    sulphates = request.args.get("sulphates")
+    alcohol = request.args.get("alcohol")
+
+    # We attempt to match the training order by placing the type dummy first
+    features = [
+        type_code,
+        fixed_acidity,
+        volatile_acidity,
+        citric_acid,
+        residual_sugar,
+        chlorides,
+        free_sulfur,
+        total_sulfur,
+        density,
+        ph,
+        sulphates,
+        alcohol,
+    ]
+
+    return jsonify({
+        "prediction": float(vino_model.predict(array(features).reshape(1, -1))[0])
+    })
+
+"""
 @app.route("/static/<path>", methods=["GET"])
 def serve_detection_results(path: str):
     return send_from_directory(app.config["RESULTS_FOLDER"], path)
@@ -257,7 +478,7 @@ def face_recognition():
             "detectedFaces": list(map(lambda a: a.as_dict(), detected_faces)),  # type:ignore
         }
     )
-
+"""
 
 if __name__ == "__main__":
     app.run("0.0.0.0", 8080, debug=True)
