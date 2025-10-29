@@ -6,6 +6,7 @@ import intentMap from '@/voice/intent_map.json';
 const listening = ref(false);
 const transcript = ref('');
 const lastResult = ref('');
+const sentParams = ref<Record<string, unknown> | null>(null);
 
 let recognition: any = null;
 const SpeechRecognitionClass: any = (window as unknown as any).SpeechRecognition || (window as unknown as any).webkitSpeechRecognition;
@@ -31,6 +32,7 @@ function startListening() {
     }
     transcript.value = '';
     lastResult.value = '';
+    sentParams.value = null;
     listening.value = true;
     recognition.start();
 }
@@ -96,7 +98,7 @@ async function processTranscript(text: string) {
             const marketRes = await fetch(apiUrl(mapping.market_endpoint));
             const market = await marketRes.json();
             // call model
-            const qs = buildQuery({
+            const params = {
                 open: market.open,
                 high: market.high,
                 low: market.low,
@@ -107,7 +109,9 @@ async function processTranscript(text: string) {
                 ma3: market.ma3,
                 ma7: market.ma7,
                 volatility: market.volatility,
-            });
+            };
+            sentParams.value = params;
+            const qs = buildQuery(params);
             const r = await fetch(`${apiUrl(mapping.endpoint)}?${qs}`);
             const body = await r.json();
             const pred = body.prediction;
@@ -125,6 +129,7 @@ async function processTranscript(text: string) {
 
     // default: use sample params from mapping
     if (mapping.sample_params) {
+        sentParams.value = mapping.sample_params as Record<string, unknown>;
         const qs = buildQuery(mapping.sample_params);
         try {
             const r = await fetch(`${apiUrl(mapping.endpoint)}?${qs}`);
@@ -157,6 +162,10 @@ async function processTranscript(text: string) {
         <div class="box">
             <p><strong>Transcript:</strong> {{ transcript }}</p>
             <p><strong>Resultado:</strong> {{ lastResult }}</p>
+            <div v-if="sentParams">
+                <p><strong>Parámetros enviados:</strong></p>
+                <pre>{{ JSON.stringify(sentParams, null, 2) }}</pre>
+            </div>
         </div>
     </div>
 </template>
