@@ -1,0 +1,95 @@
+{
+  "predict_bitcoin_direction": {
+    "label": "Bitcoin direction (up/down)",
+    "keywords": ["bitcoin", "btc"],
+    "match": ["subir", "subirá", "sube", "va a subir", "mañana"],
+    "endpoint": "/api/models/bitcoin",
+    "requires_latest_data": true,
+    "market_endpoint": "/api/market/bitcoin/latest"
+  },
+  "predict_aguacate_price": {
+    "label": "Aguacate price",
+    "keywords": ["aguacate"],
+    "match": ["precio", "precios", "cuánto cost", "valor"],
+    "endpoint": "/api/models/aguacate",
+    "sample_params": {
+      "total-volume": "64236.62",
+      "4046": "1036.74",
+      "4225": "54454.85",
+      "4770": "48.16",
+      "total-bags": "8696.87",
+      "small-bags": "8603.62",
+      "large-bags": "93.25",
+      "xlarge-bags": "0.0",
+      "type": "conventional",
+      "year": "2015",
+      "region": "Albany"
+    }
+  },
+  "predict_vino_quality": {
+    "label": "Vino quality",
+    "keywords": ["vino"],
+    "match": ["calidad", "quality"],
+    "endpoint": "/api/models/vino",
+    "sample_params": {
+      "type": "white",
+      "fixed-acidity": "7",
+      "volatile-acidity": "0.27",
+      "citric-acid": "0.36",
+      "residual-sugar": "20.7",
+      "chlorides": "0.045",
+      "free-sulfur-dioxide": "45",
+      "total-sulfur-dioxide": "170",
+      "density": "1.001",
+      "pH": "3",
+      "sulphates": "0.45",
+      "alcohol": "8.8"
+    }
+  },
+  "predict_telecom_churn": {
+    "label": "Telecom churn",
+    "keywords": ["telecomunicaciones", "churn", "darse de baja", "baja"],
+    "endpoint": "/api/models/telecomunicaciones",
+    "sample_params": {
+      "gender": "Female",
+      "senior-citizen": "0",
+      "partner": "Yes",
+      "dependents": "No",
+      "tenure": "1",
+      "phone-service": "No",
+      "multiple-lines": "No phone service",
+      "internet-service": "DSL",
+      "online-security": "No",
+      "online-backup": "Yes",
+      "device-protection": "No",
+      "tech-support": "No",
+      "streaming-tv": "No",
+      "streaming-movies": "No",
+      "contract": "Month-to-month",
+      "paperless-billing": "Yes",
+      "payment-method": "Electronic check",
+      "monthly-charges": "29.85",
+      "total-charges": "29.85"
+    }
+  },
+  "predict_bodyfat": {
+    "label": "BodyFat prediction",
+    "keywords": ["grasa", "bodyfat", "porcentaje de grasa"],
+    "endpoint": "/api/models/grasa",
+    "sample_params": {
+      "age": "23",
+      "weight": "154.25",
+      "height": "67.75",
+      "neck": "36.2",
+      "chest": "93.1",
+      "abdomen": "85.2",
+      "hip": "94.5",
+      "thigh": "59.0",
+      "knee": "37.3",
+      "ankle": "21.9",
+      "biceps": "32.0",
+      "forearm": "27.4",
+      "wrist": "17.1"
+    }
+  }
+}

@@ -8,6 +8,7 @@ from uuid import uuid4
 from numpy import array
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.tree import DecisionTreeClassifier
+import pandas as pd
 import hashlib
 from flask import abort
 
@@ -539,6 +540,60 @@ def vino_prediction():
     ]
 
     return jsonify({"prediction": float(vino_model.predict(array(features).reshape(1, -1))[0])})
+
+
+@app.route("/api/market/bitcoin/latest", methods=["GET"])
+def bitcoin_market_latest():
+    """Return latest computed features for bitcoin from the CSV used in training.
+
+    This mirrors the feature engineering used at training time so the frontend
+    can request the latest market snapshot to feed the model when the user
+    asks by voice (e.g., "¿Bitcoin va a subir mañana?").
+    """
+    csv_path = "./models/bitcoin/data/bitcoin.csv"
+    try:
+        df = pd.read_csv(csv_path)
+    except Exception as e:
+        return jsonify({"error": f"failed to read bitcoin data: {e}"}), 500
+
+    # Clean numeric fields similar to training script
+    for col in ["Volume", "Market Cap"]:
+        if col in df.columns:
+            df[col] = df[col].astype(str).replace({",": ""}, regex=True)
+            df[col] = df[col].replace(r"[^0-9\.\-]", "", regex=True)
+            df[col] = pd.to_numeric(df[col], errors="coerce")
+
+    # parse date and sort
+    if "Date" in df.columns:
+        df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
+        df = df.sort_values("Date")
+
+    # compute features
+    df["Return"] = df["Close"].pct_change()
+    df["MA3"] = df["Close"].rolling(3).mean()
+    df["MA7"] = df["Close"].rolling(7).mean()
+    df["Volatility"] = df["Close"].rolling(7).std()
+
+    df = df.dropna()
+    if df.shape[0] == 0:
+        return jsonify({"error": "not enough data to compute features"}), 500
+
+    last = df.iloc[-1]
+
+    features = {
+        "open": float(last["Open"]),
+        "high": float(last["High"]),
+        "low": float(last["Low"]),
+        "close": float(last["Close"]),
+        "volume": float(last["Volume"]),
+        "market_cap": float(last["Market Cap"]),
+        "return": float(last["Return"]),
+        "ma3": float(last["MA3"]),
+        "ma7": float(last["MA7"]),
+        "volatility": float(last["Volatility"]),
+        "date": last["Date"].strftime("%Y-%m-%d") if not pd.isna(last["Date"]) else None,
+    }
+    return jsonify(features)
 
 @app.route("/static/<path>", methods=["GET"])
 def serve_detection_results(path: str):

@@ -1,15 +1,16 @@
-import BikeTollModel from '@/components/bike-toll/BikeTollModel.vue';
-import CarModel from '@/components/car-price/CarModel.vue';
-import CirrhosisModel from '@/components/cirrhosis/CirrhosisModel.vue';
-import FaceRecognition from '@/components/face-recognition/FaceRecognition.vue';
-import HepatitisModel from '@/components/hepatitis/HepatitisModel.vue';
-import StrokeModel from '@/components/stroke/StrokeModel.vue';
+import BikeTollModel from "@/components/bike-toll/BikeTollModel.vue";
+import CarModel from "@/components/car-price/CarModel.vue";
+import CirrhosisModel from "@/components/cirrhosis/CirrhosisModel.vue";
+import FaceRecognition from "@/components/face-recognition/FaceRecognition.vue";
+import HepatitisModel from "@/components/hepatitis/HepatitisModel.vue";
+import StrokeModel from "@/components/stroke/StrokeModel.vue";
 
 import AguacateModel from "@/components/aguacate/AguacateModel.vue";
 import BitcoinModel from "@/components/bitcoin/BitcoinModel.vue";
 import VinoModel from "@/components/vino/VinoModel.vue";
 import TelecomModel from "@/components/telecom/TelecomModel.vue";
 import GrasaModel from "@/components/grasa/GrasaModel.vue";
+import VoiceAssistant from "@/components/voice/VoiceAssistant.vue";
 import { createRouter, createWebHistory } from "vue-router";
 
 const router = createRouter({
@@ -26,6 +27,7 @@ const router = createRouter({
     { path: "/models/vino", component: VinoModel },
     { path: "/models/telecomunicaciones", component: TelecomModel },
     { path: "/models/grasa", component: GrasaModel },
+    { path: "/voice", component: VoiceAssistant },
   ],
 });
 
