@@ -227,11 +227,17 @@ def serve_detection_results(path: str):
 @app.route("/api/models/face-recognition", methods=["POST"])
 def face_recognition():
     if not len(request.files) > 0:
-        return jsonify({ "status": 400, "message": "missing image (you did not upload an image)"}), 400
+        return (
+            jsonify({"status": 400, "message": "missing image (you did not upload an image)"}),
+            400,
+        )
     with face_client:
         image = request.files["image"]
-        filepath = join(app.config['UPLOAD_FOLDER'], image.filename if image.filename is not None else f"{uuid4()}.png")
-        image.save(filepath) # type: ignore
+        filepath = join(
+            app.config["UPLOAD_FOLDER"],
+            image.filename if image.filename is not None else f"{uuid4()}.png",
+        )
+        image.save(filepath)  # type: ignore
         with open(filepath, "rb") as image:
             detected_faces: List[DetectionResult] = face_client.detect(
                 image.read(-1),
