@@ -10,7 +10,7 @@ from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.tree import DecisionTreeClassifier
 import hashlib
 from flask import abort
-"""
+
 from azure.core.credentials import AzureKeyCredential
 from azure.ai.vision.face import FaceClient
 from azure.ai.vision.face.models import (
@@ -540,7 +540,6 @@ def vino_prediction():
 
     return jsonify({"prediction": float(vino_model.predict(array(features).reshape(1, -1))[0])})
 
-"""
 @app.route("/static/<path>", methods=["GET"])
 def serve_detection_results(path: str):
     return send_from_directory(app.config["RESULTS_FOLDER"], path)
@@ -585,7 +584,6 @@ def face_recognition():
             "detectedFaces": list(map(lambda a: a.as_dict(), detected_faces)),  # type:ignore
         }
     )
-"""
 
 if __name__ == "__main__":
     app.run("0.0.0.0", 8080, debug=True)
