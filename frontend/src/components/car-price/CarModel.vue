@@ -72,7 +72,7 @@ async function submit(form: any) {
       <input type="number" :value="0" hidden required/>
       <div class="field is-group">
         <div class="control">
-          <button type="submit" class="button is-link">Submit</button>
+          <button type="submit" class="button is-link">Predict</button>
         </div>
       </div>
     </form>
