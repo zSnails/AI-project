@@ -5,7 +5,7 @@ const prediction = ref<boolean | null>(null);
 
 async function submit(e: Event) {
     const formData = new FormData(e.target as HTMLFormElement);
-    const params = new URLSearchParams(formData as unknown as any);
+    const params = new URLSearchParams(formData as unknown as never);
     const res = await fetch(`http://localhost:8080/api/models/telecomunicaciones?${params.toString()}`);
     const body = await res.json();
     prediction.value = body.prediction;
