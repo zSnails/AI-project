@@ -80,6 +80,18 @@ async function submit(form: Event) {
 </template>
 
 <style scoped>
-.model-card { border-radius: 8px; box-shadow: 0 6px 18px rgba(10,10,10,0.06); padding: 0.75rem; }
-.raw-box { max-height: 260px; overflow: auto; background: #0f1720; color: #e6eef8; padding: 8px; border-radius: 4px; }
+.model-card {
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(10, 10, 10, 0.06);
+  padding: 0.75rem;
+}
+
+.raw-box {
+  max-height: 260px;
+  overflow: auto;
+  background: #0f1720;
+  color: #e6eef8;
+  padding: 8px;
+  border-radius: 4px;
+}
 </style>

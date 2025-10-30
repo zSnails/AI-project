@@ -41,27 +41,58 @@ async function submit(e: Event) {
               <label class="label">N Days<input class="input" name="n-days" type="number" required /></label>
             </div>
             <div class="field">
-              <label class="label">Drug<select class="select" name="drug-code"><option value="0">D-penicillamine</option><option value="1">Placebo</option></select></label>
+              <label class="label">Drug<select class="select" name="drug-code">
+                  <option value="0">D-penicillamine</option>
+                  <option value="1">Placebo</option>
+                </select></label>
             </div>
-            <div class="field"><label class="label">Age<input class="input" name="age" type="number" required /></label></div>
+            <div class="field"><label class="label">Age<input class="input" name="age" type="number" required /></label>
+            </div>
             <div class="columns">
-              <div class="column"><label class="label">Sex<select class="select" name="sex-code"><option value="0">F</option><option value="1">M</option></select></label></div>
-              <div class="column"><label class="label">Ascites<select class="select" name="ascites-code"><option value="0">N</option><option value="1">Y</option></select></label></div>
-              <div class="column"><label class="label">Hepatomegaly<select class="select" name="hepatomegaly-code"><option value="0">N</option><option value="1">Y</option></select></label></div>
-              <div class="column"><label class="label">Spiders<select class="select" name="spiders-code"><option value="0">N</option><option value="1">Y</option></select></label></div>
-              <div class="column"><label class="label">Edema<select class="select" name="edema-code"><option value="0">N</option><option value="1">S</option><option value="2">Y</option></select></label></div>
+              <div class="column"><label class="label">Sex<select class="select" name="sex-code">
+                    <option value="0">F</option>
+                    <option value="1">M</option>
+                  </select></label></div>
+              <div class="column"><label class="label">Ascites<select class="select" name="ascites-code">
+                    <option value="0">N</option>
+                    <option value="1">Y</option>
+                  </select></label></div>
+              <div class="column"><label class="label">Hepatomegaly<select class="select" name="hepatomegaly-code">
+                    <option value="0">N</option>
+                    <option value="1">Y</option>
+                  </select></label></div>
+              <div class="column"><label class="label">Spiders<select class="select" name="spiders-code">
+                    <option value="0">N</option>
+                    <option value="1">Y</option>
+                  </select></label></div>
+              <div class="column"><label class="label">Edema<select class="select" name="edema-code">
+                    <option value="0">N</option>
+                    <option value="1">S</option>
+                    <option value="2">Y</option>
+                  </select></label></div>
             </div>
-            <div class="field"><label class="label">Bilirubin<input class="input" name="bilirubin" type="number" step="0.01" required /></label></div>
-            <div class="field"><label class="label">Cholesterol<input class="input" name="cholesterol" type="number" step="0.01" required /></label></div>
-            <div class="field"><label class="label">Albumin<input class="input" name="albumin" type="number" step="0.01" required /></label></div>
-            <div class="field"><label class="label">Copper<input class="input" name="copper" type="number" step="0.01" required /></label></div>
-            <div class="field"><label class="label">Alk Phos<input class="input" name="alk_phos" type="number" step="0.01" required /></label></div>
-            <div class="field"><label class="label">SGOT<input class="input" name="sgot" type="number" step="0.01" required /></label></div>
-            <div class="field"><label class="label">Tryglicerides<input class="input" name="tryglicerides" type="number" step="0.01" required /></label></div>
-            <div class="field"><label class="label">Platelets<input class="input" name="platelets" type="number" step="0.01" required /></label></div>
-            <div class="field"><label class="label">Prothrombin<input class="input" name="prothrombin" type="number" step="0.01" required /></label></div>
-            <div class="field"><label class="label">Stage<input class="input" name="stage" type="number" required /></label></div>
-            <div class="field"><button class="button is-link" :class="{ 'is-loading': isLoading }" type="submit">Consultar</button></div>
+            <div class="field"><label class="label">Bilirubin<input class="input" name="bilirubin" type="number"
+                  step="0.01" required /></label></div>
+            <div class="field"><label class="label">Cholesterol<input class="input" name="cholesterol" type="number"
+                  step="0.01" required /></label></div>
+            <div class="field"><label class="label">Albumin<input class="input" name="albumin" type="number" step="0.01"
+                  required /></label></div>
+            <div class="field"><label class="label">Copper<input class="input" name="copper" type="number" step="0.01"
+                  required /></label></div>
+            <div class="field"><label class="label">Alk Phos<input class="input" name="alk_phos" type="number"
+                  step="0.01" required /></label></div>
+            <div class="field"><label class="label">SGOT<input class="input" name="sgot" type="number" step="0.01"
+                  required /></label></div>
+            <div class="field"><label class="label">Tryglicerides<input class="input" name="tryglicerides" type="number"
+                  step="0.01" required /></label></div>
+            <div class="field"><label class="label">Platelets<input class="input" name="platelets" type="number"
+                  step="0.01" required /></label></div>
+            <div class="field"><label class="label">Prothrombin<input class="input" name="prothrombin" type="number"
+                  step="0.01" required /></label></div>
+            <div class="field"><label class="label">Stage<input class="input" name="stage" type="number"
+                  required /></label></div>
+            <div class="field"><button class="button is-link" :class="{ 'is-loading': isLoading }"
+                type="submit">Consultar</button></div>
           </form>
         </div>
         <div class="column is-half">
@@ -80,6 +111,18 @@ async function submit(e: Event) {
 </template>
 
 <style scoped>
-.model-card { border-radius: 8px; box-shadow: 0 6px 18px rgba(10,10,10,0.06); padding: 0.75rem; }
-.raw-box { max-height: 260px; overflow: auto; background: #0f1720; color: #e6eef8; padding: 8px; border-radius: 4px; }
+.model-card {
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(10, 10, 10, 0.06);
+  padding: 0.75rem;
+}
+
+.raw-box {
+  max-height: 260px;
+  overflow: auto;
+  background: #0f1720;
+  color: #e6eef8;
+  padding: 8px;
+  border-radius: 4px;
+}
 </style>

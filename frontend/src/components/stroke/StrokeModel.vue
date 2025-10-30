@@ -49,15 +49,19 @@ async function submit(form: Event) {
             <span v-else>No probable</span>
           </h2>
           <form @submit.prevent="submit">
-            <div class="field"><label class="label">Age<input class="input" name="age" type="number" required /></label></div>
+            <div class="field"><label class="label">Age<input class="input" name="age" type="number" required /></label>
+            </div>
             <div class="field">
               <label class="checkbox"><input type="checkbox" name="hypertension"> Hypertension</label>
               <label class="checkbox"><input type="checkbox" name="heart-disease"> Heart Disease</label>
               <label class="checkbox"><input type="checkbox" name="ever-married-code"> Ever Married</label>
             </div>
-            <div class="field"><label class="label">Average Glucose Level<input class="input" name="avg-glocose-level" step="0.01" type="number" required /></label></div>
-            <div class="field"><label class="label">BMI<input class="input" name="bmi" step="0.01" type="number" required /></label></div>
-            <div class="field"><button class="button is-link" :class="{ 'is-loading': isLoading }" type="submit">Consultar</button></div>
+            <div class="field"><label class="label">Average Glucose Level<input class="input" name="avg-glocose-level"
+                  step="0.01" type="number" required /></label></div>
+            <div class="field"><label class="label">BMI<input class="input" name="bmi" step="0.01" type="number"
+                  required /></label></div>
+            <div class="field"><button class="button is-link" :class="{ 'is-loading': isLoading }"
+                type="submit">Consultar</button></div>
           </form>
         </div>
         <div class="column is-half">
@@ -76,6 +80,18 @@ async function submit(form: Event) {
 </template>
 
 <style scoped>
-.model-card { border-radius: 8px; box-shadow: 0 6px 18px rgba(10,10,10,0.06); padding: 0.75rem; }
-.raw-box { max-height: 260px; overflow: auto; background: #0f1720; color: #e6eef8; padding: 8px; border-radius: 4px; }
+.model-card {
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(10, 10, 10, 0.06);
+  padding: 0.75rem;
+}
+
+.raw-box {
+  max-height: 260px;
+  overflow: auto;
+  background: #0f1720;
+  color: #e6eef8;
+  padding: 8px;
+  border-radius: 4px;
+}
 </style>
