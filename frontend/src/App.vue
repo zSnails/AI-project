@@ -1,7 +1,8 @@
 <script setup lang="ts"></script>
 <template>
   <div class="z-grid-container">
-    <aside class="menu mt-5 mx-5">
+    <aside class="menu mt-5 mx-5 sidebar">
+      <div class="brand mt-2 mb-3 has-text-weight-bold">AI Models</div>
       <p class="menu-label">General</p>
       <ul class="menu-list">
         <li>
@@ -56,5 +57,16 @@
   display: grid;
   grid-template-areas: "sidebar main";
   grid-template-columns: 200px auto;
+}
+
+.sidebar {
+  background: #fbfdff;
+  border-right: 1px solid rgba(10, 10, 10, 0.04);
+  padding: 1rem;
+}
+
+.brand {
+  font-size: 1.05rem;
+  color: #3273dc;
 }
 </style>
