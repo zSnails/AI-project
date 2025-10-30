@@ -1,7 +1,11 @@
 from warnings import filterwarnings
+import os
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
 from pandas import DataFrame, Series, read_csv
 from numpy import ndarray
-from sklearn.metrics import r2_score, root_mean_squared_error
+from sklearn.metrics import classification_report, confusion_matrix
 from joblib import dump, load
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
@@ -14,7 +18,29 @@ def build_model(
             max_depth=15, random_state=67, min_samples_split=24
     )
     model.fit(x_train, y_train)
-    dump(model, "cirrhosis.model.pkl")
+    base_dir = os.path.dirname(__file__)
+    figures_dir = os.path.join(base_dir, "figures")
+    os.makedirs(figures_dir, exist_ok=True)
+
+    dump(model, os.path.join(base_dir, "cirrhosis.model.pkl"))
+
+    # Exportar reporte y matrices básicas usando los mismos datos de entrenamiento (sanity check)
+    try:
+        y_pred = model.predict(x_train)
+        report = classification_report(y_train, y_pred, output_dict=True)
+        report_df = pd.DataFrame(report).transpose()
+        report_df.to_csv(os.path.join(figures_dir, "classification_report.csv"))
+
+        cm = confusion_matrix(y_train, y_pred)
+        plt.figure(figsize=(6,5))
+        sns.heatmap(cm, annot=True, fmt="d", cmap="Blues")
+        plt.title("Matriz de confusión - Cirrhosis")
+        plt.xlabel("Predicción")
+        plt.ylabel("Valor real")
+        plt.savefig(os.path.join(figures_dir, "confusion_matrix.png"), bbox_inches="tight")
+        plt.close()
+    except Exception:
+        pass
 
 
 def split_data() -> None:
@@ -43,8 +69,9 @@ def split_data() -> None:
 
 
 def test_model() -> None:
-    model: DecisionTreeClassifier = load("./cirrhosis.model.pkl")
-    test = read_csv("./test_data.csv")
+    base_dir = os.path.dirname(__file__)
+    model: DecisionTreeClassifier = load(os.path.join(base_dir, "cirrhosis.model.pkl"))
+    test = read_csv(os.path.join(base_dir, "test_data.csv"))
     x_test = test[
         [
             "N_Days",
@@ -69,10 +96,28 @@ def test_model() -> None:
     ]
     y_true = test["Status_Code"]
     y_pred = model.predict(x_test)
+    from sklearn.metrics import accuracy_score, classification_report
+    print("Accuracy =", accuracy_score(y_true, y_pred))
+    print("Reporte de clasificación:\n", classification_report(y_true, y_pred))
 
-    print("R² =", r2_score(y_true, y_pred))
-    print("RMSE =", root_mean_squared_error(y_true, y_pred))
-    ...
+    # export figures for test evaluation
+    figures_dir = os.path.join(base_dir, "figures")
+    os.makedirs(figures_dir, exist_ok=True)
+    try:
+        report = classification_report(y_true, y_pred, output_dict=True)
+        report_df = pd.DataFrame(report).transpose()
+        report_df.to_csv(os.path.join(figures_dir, "classification_report_test.csv"))
+
+        cm = confusion_matrix(y_true, y_pred)
+        plt.figure(figsize=(6,5))
+        sns.heatmap(cm, annot=True, fmt="d", cmap="Blues")
+        plt.title("Matriz de confusión - Cirrhosis (test)")
+        plt.xlabel("Predicción")
+        plt.ylabel("Valor real")
+        plt.savefig(os.path.join(figures_dir, "confusion_matrix_test.png"), bbox_inches="tight")
+        plt.close()
+    except Exception:
+        pass
 
 
 if __name__ == "__main__":

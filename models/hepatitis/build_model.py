@@ -1,9 +1,13 @@
+import os
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
 from pandas import read_csv, DataFrame, Series
 from numpy import ndarray
 from joblib import dump, load
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import r2_score, root_mean_squared_error, confusion_matrix
+from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 from warnings import filterwarnings
 
 
@@ -12,7 +16,29 @@ def build_model(
 ) -> None:
     model = RandomForestClassifier(n_estimators=100, max_depth=4)
     model.fit(x_train, y_train)
-    dump(model, "hepatitis.model.pkl")
+    base_dir = os.path.dirname(__file__)
+    figures_dir = os.path.join(base_dir, "figures")
+    os.makedirs(figures_dir, exist_ok=True)
+
+    dump(model, os.path.join(base_dir, "hepatitis.model.pkl"))
+
+    # Exportar métricas básicas y figuras (sanity check)
+    try:
+        y_pred = model.predict(x_train)
+        report = classification_report(y_train, y_pred, output_dict=True)
+        report_df = pd.DataFrame(report).transpose()
+        report_df.to_csv(os.path.join(figures_dir, "classification_report.csv"))
+
+        cm = confusion_matrix(y_train, y_pred)
+        plt.figure(figsize=(6,5))
+        sns.heatmap(cm, annot=True, fmt="d", cmap="Blues")
+        plt.title("Matriz de confusión - Hepatitis")
+        plt.xlabel("Predicción")
+        plt.ylabel("Valor real")
+        plt.savefig(os.path.join(figures_dir, "confusion_matrix.png"), bbox_inches="tight")
+        plt.close()
+    except Exception:
+        pass
 
 
 def split_data() -> None:
@@ -40,8 +66,9 @@ def split_data() -> None:
 
 
 def test_model() -> None:
-    model: RandomForestClassifier = load("./hepatitis.model.pkl")
-    test = read_csv("./test_data.csv")
+    base_dir = os.path.dirname(__file__)
+    model: RandomForestClassifier = load(os.path.join(base_dir, "hepatitis.model.pkl"))
+    test = read_csv(os.path.join(base_dir, "test_data.csv"))
     x_test = test[
         [
             "Age",
@@ -60,9 +87,28 @@ def test_model() -> None:
     ]
     y_true = test["Category_Code"]
     y_pred = model.predict(x_test)
+    from sklearn.metrics import accuracy_score, classification_report
+    print("Accuracy =", accuracy_score(y_true, y_pred))
+    print("Reporte de clasificación:\n", classification_report(y_true, y_pred))
 
-    print("R² =", r2_score(y_true, y_pred))
-    print("RMSE =", root_mean_squared_error(y_true, y_pred))
+    # export figures for test evaluation
+    figures_dir = os.path.join(base_dir, "figures")
+    os.makedirs(figures_dir, exist_ok=True)
+    try:
+        report = classification_report(y_true, y_pred, output_dict=True)
+        report_df = pd.DataFrame(report).transpose()
+        report_df.to_csv(os.path.join(figures_dir, "classification_report_test.csv"))
+
+        cm = confusion_matrix(y_true, y_pred)
+        plt.figure(figsize=(6,5))
+        sns.heatmap(cm, annot=True, fmt="d", cmap="Blues")
+        plt.title("Matriz de confusión - Hepatitis (test)")
+        plt.xlabel("Predicción")
+        plt.ylabel("Valor real")
+        plt.savefig(os.path.join(figures_dir, "confusion_matrix_test.png"), bbox_inches="tight")
+        plt.close()
+    except Exception:
+        pass
 
 
 # NOTE: got these values, this also seems like a very solid model

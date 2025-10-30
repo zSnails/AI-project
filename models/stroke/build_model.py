@@ -1,10 +1,14 @@
+import os
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
 from joblib import load, dump
 from pandas import DataFrame, Series, read_csv
 from numpy.random import rand
-from numpy import ndarray, dot, log, e
+from numpy import ndarray
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import r2_score, root_mean_squared_error
+from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 from sklearn.tree import DecisionTreeClassifier
 
 
@@ -13,7 +17,29 @@ def build_model(
 ) -> None:
     model = RandomForestClassifier(n_estimators=200, max_depth=4)
     model.fit(x_train, y_train)
-    dump(model, "stroke.model.pkl")
+    base_dir = os.path.dirname(__file__)
+    figures_dir = os.path.join(base_dir, "figures")
+    os.makedirs(figures_dir, exist_ok=True)
+
+    dump(model, os.path.join(base_dir, "stroke.model.pkl"))
+
+    # Exportar métricas y figuras (sanity check)
+    try:
+        y_pred = model.predict(x_train)
+        report = classification_report(y_train, y_pred, output_dict=True)
+        report_df = pd.DataFrame(report).transpose()
+        report_df.to_csv(os.path.join(figures_dir, "classification_report.csv"))
+
+        cm = confusion_matrix(y_train, y_pred)
+        plt.figure(figsize=(6,5))
+        sns.heatmap(cm, annot=True, fmt="d", cmap="Greens")
+        plt.title("Matriz de confusión - Stroke")
+        plt.xlabel("Predicción")
+        plt.ylabel("Valor real")
+        plt.savefig(os.path.join(figures_dir, "confusion_matrix.png"), bbox_inches="tight")
+        plt.close()
+    except Exception:
+        pass
 
 
 def split_data() -> None:
@@ -45,8 +71,9 @@ def split_data() -> None:
 
 
 def test_model() -> None:
-    model: RandomForestClassifier = load("./stroke.model.pkl")
-    test = read_csv("./test_data.csv")
+    base_dir = os.path.dirname(__file__)
+    model: RandomForestClassifier = load(os.path.join(base_dir, "stroke.model.pkl"))
+    test = read_csv(os.path.join(base_dir, "test_data.csv"))
     y_true = test["stroke"]
     x_test = test[
         [
@@ -59,8 +86,28 @@ def test_model() -> None:
         ]
     ]
     y_pred = model.predict(x_test)
-    print("R² =", r2_score(y_true, y_pred))
-    print("RMSE =", root_mean_squared_error(y_true, y_pred))
+    print("Accuracy =", accuracy_score(y_true, y_pred))
+    from sklearn.metrics import classification_report
+    print("Reporte de clasificación:\n", classification_report(y_true, y_pred))
+
+    # export figures for test evaluation
+    figures_dir = os.path.join(base_dir, "figures")
+    os.makedirs(figures_dir, exist_ok=True)
+    try:
+        report = classification_report(y_true, y_pred, output_dict=True)
+        report_df = pd.DataFrame(report).transpose()
+        report_df.to_csv(os.path.join(figures_dir, "classification_report_test.csv"))
+
+        cm = confusion_matrix(y_true, y_pred)
+        plt.figure(figsize=(6,5))
+        sns.heatmap(cm, annot=True, fmt="d", cmap="Greens")
+        plt.title("Matriz de confusión - Stroke (test)")
+        plt.xlabel("Predicción")
+        plt.ylabel("Valor real")
+        plt.savefig(os.path.join(figures_dir, "confusion_matrix_test.png"), bbox_inches="tight")
+        plt.close()
+    except Exception:
+        pass
 
 
 if __name__ == "__main__":
