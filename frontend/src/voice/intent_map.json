@@ -91,5 +91,86 @@
       "forearm": "27.4",
       "wrist": "17.1"
     }
+  },
+  "predict_bike_price": {
+    "label": "Bike ride price",
+    "keywords": ["bike", "bicicleta", "peaje", "toll"],
+    "endpoint": "/api/models/bike-toll",
+    "sample_params": {
+      "distance": "12.5",
+      "rate-code": "1"
+    }
+  },
+  "predict_car_price": {
+    "label": "Car price prediction",
+    "keywords": ["car", "coche", "auto", "precio coche", "precio auto"],
+    "endpoint": "/api/models/car-price",
+    "sample_params": {
+      "car-name-code": "1",
+      "year": "2015",
+      "present-price": "5.5",
+      "kms-driven": "50000",
+      "fuel-type-code": "1",
+      "seller-type-code": "0",
+      "transmission-code": "1",
+      "owner": "0"
+    }
+  },
+  "predict_cirrhosis": {
+    "label": "Cirrhosis stage",
+    "keywords": ["cirrosis", "higado", "cirrhosis"],
+    "endpoint": "/api/models/cirrhosis",
+    "sample_params": {
+      "n-days": "100",
+      "drug-code": "0",
+      "age": "45",
+      "sex-code": "0",
+      "ascites-code": "0",
+      "hepatomegaly-code": "0",
+      "spiders-code": "0",
+      "edema-code": "0",
+      "bilirubin": "1.0",
+      "cholesterol": "200",
+      "albumin": "3.5",
+      "copper": "50",
+      "alk_phos": "85",
+      "sgot": "35",
+      "tryglicerides": "150",
+      "platelets": "200",
+      "prothrombin": "85",
+      "stage": "1"
+    }
+  },
+  "predict_hepatitis": {
+    "label": "Hepatitis category",
+    "keywords": ["hepatitis", "hígado", "hepatitis c"],
+    "endpoint": "/api/models/hepatitis",
+    "sample_params": {
+      "age": "40",
+      "sex-code": "0",
+      "alb": "3.2",
+      "alp": "80",
+      "alt": "45",
+      "ast": "50",
+      "bil": "1.1",
+      "che": "0",
+      "chol": "180",
+      "crea": "0.9",
+      "ggt": "30",
+      "prot": "6.5"
+    }
+  },
+  "predict_stroke": {
+    "label": "Stroke risk",
+    "keywords": ["ictus", "stroke", "derrame", "ataque cerebral"],
+    "endpoint": "/api/models/stroke",
+    "sample_params": {
+      "age": "65",
+      "hypertension": "1",
+      "heart-disease": "0",
+      "avg-glocose-level": "105.5",
+      "ever-married-code": "1",
+      "bmi": "26.0"
+    }
   }
 }
