@@ -53,7 +53,7 @@ def get_whisper_model():
     global _whisper_model
     if _whisper_model is None:
         print("Cargando modelo Whisper (lazy)...")
-        import whisper  # import diferido para no bloquear el arranque
+        import whisper 
         _whisper_model = whisper.load_model("base")
         print("Modelo Whisper cargado.")
     return _whisper_model
