@@ -47,15 +47,12 @@ app.config["AUDIO_FOLDER"] = "./audio_uploads/"
 # Crear carpeta para audios si no existe
 os.makedirs(app.config["AUDIO_FOLDER"], exist_ok=True)
 
-# Carga perezosa de Whisper
 _whisper_model = None
 def get_whisper_model():
     global _whisper_model
     if _whisper_model is None:
-        print("Cargando modelo Whisper (lazy)...")
-        import whisper 
+        import whisper
         _whisper_model = whisper.load_model("base")
-        print("Modelo Whisper cargado.")
     return _whisper_model
 
 
@@ -359,9 +356,6 @@ def stroke_prediction():
     return jsonify({"prediction": int(stroke_model.predict(data.reshape(1, -1))[0]) == 1})
 
 
-# --- Model endpoints added: aguacate, bitcoin, grasa, telecomunicaciones, vino
-# These endpoints follow the project's existing style: accept features via query
-# params and return a JSON with the model prediction.
 
 
 # Aguacate: features order (as trained):
@@ -657,10 +651,7 @@ def face_recognition():
     )
 @app.route("/api/audio/transcribe", methods=["POST"])
 def audio_transcribe():
-    """
-    Endpoint para transcribir audio usando Whisper.
-    Recibe un archivo de audio (wav, mp3, etc.) y devuelve el texto transcrito.
-    """
+    """Transcribe un archivo de audio enviado por el cliente."""
     if "audio" not in request.files:
         return jsonify({"status": 400, "message": "missing audio file"}), 400
 
@@ -675,7 +666,6 @@ def audio_transcribe():
     try:
         audio_file.save(temp_path)
 
-        # Transcribir con Whisper (carga perezosa)
         model = get_whisper_model()
         result = model.transcribe(temp_path, language="es")
 
