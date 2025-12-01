@@ -13,28 +13,10 @@ const rawResponse = ref<any>(null);
 const resultAt = ref<string | null>(null);
 const showParams = ref(true);
 
-let recognition: any = null;
-const SpeechRecognitionClass: any = (window as unknown as any).SpeechRecognition || (window as unknown as any).webkitSpeechRecognition;
-if (SpeechRecognitionClass) {
-    recognition = new SpeechRecognitionClass();
-    recognition.lang = 'es-ES';
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
-    recognition.onresult = (ev: any) => {
-        const text = ev.results[0][0].transcript;
-        transcript.value = text;
-        processTranscript(text);
-    };
-    recognition.onend = () => {
-        listening.value = false;
-    };
-}
+let mediaRecorder: MediaRecorder | null = null;
+let audioChunks: Blob[] = [];
 
-function startListening() {
-    if (!recognition) {
-        alert('SpeechRecognition no está disponible en este navegador');
-        return;
-    }
+async function startListening() {
     transcript.value = '';
     lastResult.value = '';
     sentParams.value = null;
@@ -43,12 +25,65 @@ function startListening() {
     resultAt.value = null;
     isLoading.value = false;
     listening.value = true;
-    recognition.start();
+    audioChunks = [];
+
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+
+        mediaRecorder.ondataavailable = (event) => {
+            if (event.data.size > 0) {
+                audioChunks.push(event.data);
+            }
+        };
+
+        mediaRecorder.onstop = async () => {
+            listening.value = false;
+            isLoading.value = true;
+
+            stream.getTracks().forEach(track => track.stop());
+
+            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+
+            try {
+                const formData = new FormData();
+                formData.append('audio', audioBlob, 'recording.webm');
+
+                const response = await fetch(apiUrl('/api/audio/transcribe'), {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    transcript.value = result.transcript;
+                    processTranscript(result.transcript);
+                } else {
+                    lastResult.value = 'Error en transcripción: ' + (result.message || 'error desconocido');
+                    speak(lastResult.value);
+                }
+            } catch (error) {
+                console.error('Error transcribiendo:', error);
+                lastResult.value = 'Error al transcribir audio: ' + String(error);
+                speak(lastResult.value);
+            } finally {
+                isLoading.value = false;
+            }
+        };
+
+        mediaRecorder.start();
+    } catch (error) {
+        console.error('Error accediendo al micrófono:', error);
+        alert('No se pudo acceder al micrófono: ' + String(error));
+        listening.value = false;
+    }
 }
 
 function stopListening() {
-    if (recognition) recognition.stop();
-    listening.value = false;
+    if (mediaRecorder && mediaRecorder.state === 'recording') {
+        mediaRecorder.stop();
+    }
 }
 
 function speak(text: string) {
@@ -75,19 +110,15 @@ function buildQuery(params: Record<string, unknown>) {
 }
 
 function apiUrl(path: string) {
-    // If the path is an absolute URL, return as-is
     if (/^https?:\/\//.test(path)) return path;
-    // If frontend is served from the same host/port as backend, use relative
     try {
         const loc = window.location;
-        // If current origin is same as backend origin (port 8080), use relative
         if (loc.port === '8080' || loc.hostname === 'localhost' && loc.port === '8080') {
             return path;
         }
     } catch (e) {
         console.log('apiUrl error', e);
     }
-    // Otherwise, default to backend running on localhost:8080
     return `http://localhost:8080${path}`;
 }
 
@@ -101,13 +132,11 @@ async function processTranscript(text: string) {
 
     const mapping = (intentMap as unknown as any)[intent] as Record<string, any>;
 
-    // bitcoin special flow: fetch market snapshot if requested
     if (mapping.requires_latest_data && mapping.market_endpoint) {
         isLoading.value = true;
         try {
             const marketRes = await fetch(apiUrl(mapping.market_endpoint));
             const market = await marketRes.json();
-            // call model
             const params = {
                 open: market.open,
                 high: market.high,
@@ -142,7 +171,6 @@ async function processTranscript(text: string) {
         }
     }
 
-    // default: use sample params from mapping
     if (mapping.sample_params) {
         isLoading.value = true;
         sentParams.value = mapping.sample_params as Record<string, unknown>;

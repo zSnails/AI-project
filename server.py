@@ -11,6 +11,8 @@ from sklearn.tree import DecisionTreeClassifier
 import pandas as pd
 import hashlib
 from flask import abort
+import tempfile
+import os
 
 from azure.core.credentials import AzureKeyCredential
 from azure.ai.vision.face import FaceClient
@@ -40,6 +42,21 @@ CORS(app)
 
 app.config["UPLOAD_FOLDER"] = "./uploads/"
 app.config["RESULTS_FOLDER"] = "./detection_results/"
+app.config["AUDIO_FOLDER"] = "./audio_uploads/"
+
+# Crear carpeta para audios si no existe
+os.makedirs(app.config["AUDIO_FOLDER"], exist_ok=True)
+
+# Carga perezosa de Whisper
+_whisper_model = None
+def get_whisper_model():
+    global _whisper_model
+    if _whisper_model is None:
+        print("Cargando modelo Whisper (lazy)...")
+        import whisper  # import diferido para no bloquear el arranque
+        _whisper_model = whisper.load_model("base")
+        print("Modelo Whisper cargado.")
+    return _whisper_model
 
 
 def _parse_num(val: str | None, name: str, cast=float):
@@ -638,6 +655,42 @@ def face_recognition():
             "detectedFaces": list(map(lambda a: a.as_dict(), detected_faces)),  # type:ignore
         }
     )
+@app.route("/api/audio/transcribe", methods=["POST"])
+def audio_transcribe():
+    """
+    Endpoint para transcribir audio usando Whisper.
+    Recibe un archivo de audio (wav, mp3, etc.) y devuelve el texto transcrito.
+    """
+    if "audio" not in request.files:
+        return jsonify({"status": 400, "message": "missing audio file"}), 400
+
+    audio_file = request.files["audio"]
+
+    # Guardar el archivo temporalmente
+    temp_path = join(
+        app.config["AUDIO_FOLDER"],
+        f"{uuid4()}.webm"  # El navegador suele enviar webm
+    )
+
+    try:
+        audio_file.save(temp_path)
+
+        # Transcribir con Whisper (carga perezosa)
+        model = get_whisper_model()
+        result = model.transcribe(temp_path, language="es")
+
+        # Limpiar archivo temporal
+        os.remove(temp_path)
+
+        return jsonify({
+            "transcript": result["text"],
+            "language": result.get("language", "es")
+        })
+    except Exception as e:
+        # Limpiar archivo si existe
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
+        return jsonify({"status": 500, "message": f"transcription error: {str(e)}"}), 500
 
 if __name__ == "__main__":
     app.run("0.0.0.0", 8080, debug=True)
